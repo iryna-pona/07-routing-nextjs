@@ -10,7 +10,7 @@ import NoteForm from '@/components/NoteForm/NoteForm';
 import Modal from '@/components/Modal/Modal';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
-import ErrorMessage from '@/app/notes/filter/error';
+import ErrorMessage from '@/app/notes/filter/[...slug]/error';
 import Loading from "@/app/loading";
 import css from './NotesPage.module.css';
 
