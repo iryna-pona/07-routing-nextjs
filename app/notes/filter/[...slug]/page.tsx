@@ -4,14 +4,16 @@ import { fetchNotes } from '@/lib/api';
 import type { FetchNotesParams } from '@/lib/api';
 
 interface PageProps {
-  params: { slug?: string[] };
+  params: Promise<{ slug?: string[] }>;
 }
 
-export default async function NotesPage({ params }: PageProps) {
+export default async function NotesPage(props: PageProps) {
+  const { slug } = await props.params;
+
   const queryClient = new QueryClient();
 
-  const slug = params.slug?.[0];
-  const tag = slug === 'all' ? undefined : slug;
+  const rawTag = slug?.[0];
+  const tag = rawTag === 'all' ? undefined : rawTag;
 
   const fetchParams: FetchNotesParams = {
     search: '',
