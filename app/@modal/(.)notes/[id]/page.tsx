@@ -1,10 +1,5 @@
-import ModalOverlay from '@/components/Modal/ModalOverlay';
-import NoteDetailsClient from '@/app/notes/[id]/NoteDetails.client';
+import NotePreview from "./NotePreview.client";
 
-export default function NotePreview() {
-  return (
-    <ModalOverlay>
-      <NoteDetailsClient />
-    </ModalOverlay>
-  );
+export default function ModalNotePage() {
+  return <NotePreview />;
 }
