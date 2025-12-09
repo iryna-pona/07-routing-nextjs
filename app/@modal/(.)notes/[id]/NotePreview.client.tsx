@@ -27,10 +27,6 @@ export default function NotePreview() {
   return (
     <Modal onClose={close}>
       <div className={css.container}>
-        <button className={css.backBtn} onClick={close}>
-          ← Back
-        </button>
-
         <div className={css.item}>
           <div className={css.header}>
             <h2>{note.title}</h2>
@@ -43,6 +39,10 @@ export default function NotePreview() {
           <p className={css.date}>
             {new Date(note.createdAt).toLocaleString()}
           </p>
+
+          <button className={css.backBtn} onClick={close}>
+            ← Back
+          </button>
         </div>
       </div>
     </Modal>
