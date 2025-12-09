@@ -11,16 +11,22 @@ export default function NotePreview() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const { data: note, isLoading } = useQuery<Note>({
+  const { data: note, isLoading, isError, error } = useQuery<Note, Error>({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
   const close = () => router.back();
 
-  if (isLoading)
-    return <Modal onClose={close}>Loading...</Modal>;
+  if (!id) return null;
 
+  if (isLoading)
+    return <Modal onClose={close}>Loading, please wait...</Modal>;
+  
+  if (isError)
+    return <Modal onClose={close}>Error: {error?.message}</Modal>;
+  
   if (!note)
     return <Modal onClose={close}>Note not found</Modal>;
 
