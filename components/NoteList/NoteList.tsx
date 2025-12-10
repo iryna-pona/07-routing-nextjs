@@ -14,7 +14,7 @@ export default function NoteList({ notes }: NoteListProps) {
   const mutation = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] }); // оновлюємо кеш
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
@@ -28,7 +28,9 @@ export default function NoteList({ notes }: NoteListProps) {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <Link href={`/notes/${note.id}`} className={css.view}>View details</Link>
+            <Link href={`/notes/${note.id}`} className={css.view}>
+              View details
+            </Link>
             <button className={css.button} onClick={() => mutation.mutate(note.id)}>
               Delete
             </button>

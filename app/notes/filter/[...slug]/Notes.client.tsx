@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
-import { fetchNotes } from '@/lib/api'; 
+import { fetchNotes } from '@/lib/api';
 import type { FetchNotesParams, FetchNotesResponse } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
 import NoteForm from '@/components/NoteForm/NoteForm';
@@ -11,7 +11,7 @@ import Modal from '@/components/Modal/Modal';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
 import ErrorMessage from '@/app/notes/filter/[...slug]/error';
-import Loading from "@/app/loading";
+import Loading from '@/app/loading';
 import css from './NotesPage.module.css';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   initialTag?: string;
 }
 
-export default function NotesClient({ initialPage, initialSearch, perPage, initialTag, }: Props) {
+export default function NotesClient({ initialPage, initialSearch, perPage, initialTag }: Props) {
   const PER_PAGE = perPage ?? 12;
 
   const [page, setPage] = useState(initialPage);
@@ -29,7 +29,7 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const tag = initialTag ?? "";
+  const tag = initialTag ?? '';
 
   const params: FetchNotesParams = {
     search: debouncedSearch,
@@ -42,10 +42,12 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
   const { data, isLoading, isError, error } = useQuery<FetchNotesResponse, Error>({
     queryKey: ['notes', params.search, params.page, tag],
     queryFn: () => fetchNotes(params),
+    refetchOnMount: false,
+    staleTime: 1000 * 60,
     placeholderData: { notes: [], totalPages: 1 } as FetchNotesResponse,
   });
 
-    const handleSearch = (value: string) => {
+  const handleSearch = (value: string) => {
     setSearch(value);
     setPage(1);
   };
@@ -55,6 +57,9 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
 
   if (isLoading) return <Loading />;
   if (isError && error) return <ErrorMessage error={error} />;
+  if (!data || data.notes.length === 0) {
+    return <p>No notes found.</p>;
+  }
 
   return (
     <div className={css.app}>
