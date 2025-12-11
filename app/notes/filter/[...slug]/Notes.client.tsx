@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 import { fetchNotes } from '@/lib/api';
 import type { FetchNotesParams, FetchNotesResponse } from '@/lib/api';
+import { keepPreviousData } from '@tanstack/react-query';
 import NoteList from '@/components/NoteList/NoteList';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import Modal from '@/components/Modal/Modal';
@@ -39,12 +40,12 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
     ...(tag ? { tag } : {}),
   };
 
-  const { data, isLoading, isError, error } = useQuery<FetchNotesResponse, Error>({
+  const { data, isLoading, isFetching, isError, error } = useQuery<FetchNotesResponse, Error>({
     queryKey: ['notes', params.search, params.page, tag],
     queryFn: () => fetchNotes(params),
     refetchOnMount: false,
     staleTime: 1000 * 60,
-    placeholderData: { notes: [], totalPages: 1 } as FetchNotesResponse,
+    placeholderData: keepPreviousData,
   });
 
   const handleSearch = (value: string) => {
@@ -57,9 +58,8 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
 
   if (isLoading) return <Loading />;
   if (isError && error) return <ErrorMessage error={error} />;
-  if (!data || data.notes.length === 0) {
-    return <p>No notes found.</p>;
-  }
+  if (!data) return <Loading />;
+  if (data.notes.length === 0 && !isFetching) return <p>No notes found.</p>;
 
   return (
     <div className={css.app}>
@@ -73,7 +73,7 @@ export default function NotesClient({ initialPage, initialSearch, perPage, initi
         </button>
       </header>
 
-      <NoteList notes={data?.notes ?? []} />
+      <NoteList notes={data?.notes ?? []} isLoading={isLoading} isFetching={isFetching} />
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
